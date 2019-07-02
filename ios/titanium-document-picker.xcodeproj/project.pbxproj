@@ -7,18 +7,15 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		DB24E03C20766AC90033B2B1 /* TiDocumentpickerExampleProxy.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB24E03B20766AC90033B2B1 /* TiDocumentpickerExampleProxy.swift */; };
 		DB34CDE0207B998A005F8E8C /* TiDocumentpickerModuleAssets.m in Sources */ = {isa = PBXBuildFile; fileRef = DB34CDDE207B998A005F8E8C /* TiDocumentpickerModuleAssets.m */; };
 		DB34CDE1207B998A005F8E8C /* TiDocumentpickerModuleAssets.h in Headers */ = {isa = PBXBuildFile; fileRef = DB34CDDF207B998A005F8E8C /* TiDocumentpickerModuleAssets.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		DB34CDE6207B9EBD005F8E8C /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DB34CDE5207B9EBD005F8E8C /* Foundation.framework */; };
 		DB52E2401E9CCF8D00AAAEE0 /* TiDocumentpicker_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = DB52E23F1E9CCF8D00AAAEE0 /* TiDocumentpicker_Prefix.pch */; };
 		DB52E2431E9CD0F800AAAEE0 /* TiDocumentpickerModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB52E2421E9CD0F800AAAEE0 /* TiDocumentpickerModule.swift */; };
 		DB75E5161E9CD59000809B2D /* TiDocumentpicker.h in Headers */ = {isa = PBXBuildFile; fileRef = DB75E5151E9CD58100809B2D /* TiDocumentpicker.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		DBB66221208481A800EAD6D9 /* TitaniumKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DBB6621E2084819D00EAD6D9 /* TitaniumKit.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		DB24E03B20766AC90033B2B1 /* TiDocumentpickerExampleProxy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = TiDocumentpickerExampleProxy.swift; path = Classes/TiDocumentpickerExampleProxy.swift; sourceTree = "<group>"; };
 		DB34CDDE207B998A005F8E8C /* TiDocumentpickerModuleAssets.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TiDocumentpickerModuleAssets.m; path = Classes/TiDocumentpickerModuleAssets.m; sourceTree = SOURCE_ROOT; };
 		DB34CDDF207B998A005F8E8C /* TiDocumentpickerModuleAssets.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TiDocumentpickerModuleAssets.h; path = Classes/TiDocumentpickerModuleAssets.h; sourceTree = SOURCE_ROOT; };
 		DB34CDE5207B9EBD005F8E8C /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -35,7 +32,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DBB66221208481A800EAD6D9 /* TitaniumKit.framework in Frameworks */,
 				DB34CDE6207B9EBD005F8E8C /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -60,7 +56,6 @@
 			isa = PBXGroup;
 			children = (
 				DB52E2421E9CD0F800AAAEE0 /* TiDocumentpickerModule.swift */,
-				DB24E03B20766AC90033B2B1 /* TiDocumentpickerExampleProxy.swift */,
 			);
 			name = Sources;
 			sourceTree = "<group>";
@@ -97,14 +92,6 @@
 				DB258CA41F0964DE000D0D8D /* Misc */,
 			);
 			name = TiDocumentpicker;
-			sourceTree = "<group>";
-		};
-		DBB662192084819D00EAD6D9 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				DBB6621E2084819D00EAD6D9 /* TitaniumKit.framework */,
-			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -157,33 +144,23 @@
 					};
 				};
 			};
-			buildConfigurationList = DB52E2241E9CCD7000AAAEE0 /* Build configuration list for PBXProject "TiDocumentpicker" */;
+			buildConfigurationList = DB52E2241E9CCD7000AAAEE0 /* Build configuration list for PBXProject "titanium-document-picker" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 			);
 			mainGroup = DB52E2201E9CCD7000AAAEE0;
 			productRefGroup = DB52E22B1E9CCD7000AAAEE0 /* Products */;
 			projectDirPath = "";
-			projectReferences = ();
 			projectRoot = "";
 			targets = (
 				DB52E2291E9CCD7000AAAEE0 /* TiDocumentpicker */,
 			);
 		};
 /* End PBXProject section */
-
-/* Begin PBXReferenceProxy section */
-		DBB6621E2084819D00EAD6D9 /* TitaniumKit.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = TitaniumKit.framework;
-			remoteRef = DBB6621D2084819D00EAD6D9 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		DB52E2281E9CCD7000AAAEE0 /* Resources */ = {
@@ -200,7 +177,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DB24E03C20766AC90033B2B1 /* TiDocumentpickerExampleProxy.swift in Sources */,
 				DB34CDE0207B998A005F8E8C /* TiDocumentpickerModuleAssets.m in Sources */,
 				DB52E2431E9CD0F800AAAEE0 /* TiDocumentpickerModule.swift in Sources */,
 			);
@@ -212,7 +188,6 @@
 		DBB66220208481A400EAD6D9 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = TitaniumKit;
-			targetProxy = DBB6621F208481A400EAD6D9 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -359,12 +334,12 @@
 					"-ObjC",
 					"$(inherited)",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.appcelerator.titanium-document-picker;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.appcelerator.titanium-document-picker";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/Titanium";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 3.0;
+				SWIFT_VERSION = 5.0;
 				VALID_ARCHS = "$(ARCHS_STANDARD)";
 			};
 			name = Debug;
@@ -398,11 +373,11 @@
 					"-ObjC",
 					"$(inherited)",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.appcelerator.titanium-document-picker;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.appcelerator.titanium-document-picker";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/Titanium";
-				SWIFT_VERSION = 3.0;
+				SWIFT_VERSION = 5.0;
 				VALID_ARCHS = "$(ARCHS_STANDARD)";
 			};
 			name = Release;
@@ -410,7 +385,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		DB52E2241E9CCD7000AAAEE0 /* Build configuration list for PBXProject "TiDocumentpicker" */ = {
+		DB52E2241E9CCD7000AAAEE0 /* Build configuration list for PBXProject "titanium-document-picker" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				DB52E2301E9CCD7000AAAEE0 /* Debug */,

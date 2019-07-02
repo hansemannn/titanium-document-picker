@@ -6,22 +6,9 @@
 //  Copyright (c) 2019 Your Company. All rights reserved.
 //
 
-import UIKit
+import MobileCoreServices
 import TitaniumKit
-
-/**
- 
- Titanium Swift Module Requirements
- ---
- 
- 1. Use the @objc annotation to expose your class to Objective-C (used by the Titanium core)
- 2. Use the @objc annotation to expose your method to Objective-C as well.
- 3. Method arguments always have the "[Any]" type, specifying a various number of arguments.
- Unwrap them like you would do in Swift, e.g. "guard let arguments = arguments, let message = arguments.first"
- 4. You can use any public Titanium API like before, e.g. TiUtils. Remember the type safety of Swift, like Int vs Int32
- and NSString vs. String.
- 
- */
+import UIKit
 
 @objc(TiDocumentpickerModule)
 class TiDocumentpickerModule: TiModule {
@@ -36,28 +23,41 @@ class TiDocumentpickerModule: TiModule {
     return "ti.documentpicker"
   }
 
-  override func startup() {
-    super.startup()
-    debugPrint("[DEBUG] \(self) loaded")
+  @objc(showDocumentPicker:)
+  func showDocumentPicker(arguments: [[String: Any]]?) {
+
+    let types = [String(kUTTypeText), String(kUTTypeContent), String(kUTTypeItem), String(kUTTypeData)]
+    let picker = UIDocumentPickerViewController(documentTypes: types, in: .import)
+    
+    picker.delegate = self
+
+    if #available(iOS 11.0, *) {
+      picker.allowsMultipleSelection = true
+    }
+    
+    guard let controller = TiApp.controller(), let topPresentedController = controller.topPresentedController() else {
+      print("[WARN] No window opened. Ignoring gallery call …")
+      return
+    }
+    
+    topPresentedController.present(picker, animated: true, completion: nil)
   }
+}
 
-  @objc(example:)
-  func example(arguments: Array<Any>?) -> String {
-    // Example method. 
-    // Call with "MyModule.example(args)"
+// MARK: UIDocumentPickerDelegate
 
-    return "hello world!"
+extension TiDocumentpickerModule: UIDocumentPickerDelegate {
+
+  func documentPickerWasCancelled(_ controller: UIDocumentPickerViewController) {
+    fireEvent("cancel")
   }
   
-  @objc public var exampleProp: String {
-     get { 
-        // Example property getter
-        return "Titanium rocks!"
-     }
-     set {
-        // Example property setter
-        // Call with "MyModule.exampleProp = 'newValue'"
-        self.replaceValue(newValue, forKey: "exampleProp", notification: false)
-     }
-   }
+  func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
+    fireEvent("success", with: ["documents": urls.map { $0.absoluteString }])
+  }
+  
+  // DEPRECATED: iOS < 10 compatibility
+  func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentAt url: URL) {
+    fireEvent("success", with: ["documents": [url]])
+  }
 }
