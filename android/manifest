@@ -1,0 +1,18 @@
+#
+# this is your module manifest and used by Titanium
+# during compilation, packaging, distribution, etc.
+#
+version: 1.0.0
+apiversion: 4
+architectures: arm64-v8a armeabi-v7a x86
+description: titanium-document-picker
+author: Your Name
+license: Specify your license
+copyright: Copyright (c) 2019 by Your Company
+
+# these should not be edited
+name: titanium-document-picker
+moduleid: ti.documentpicker
+guid: 3f4e12c8-b5ff-46a1-a20f-1be2d8b8c5c8
+platform: android
+minsdk: 8.0.0
