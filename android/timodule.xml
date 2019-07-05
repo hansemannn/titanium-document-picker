@@ -4,8 +4,28 @@
 		Similar to tiapp.xml, but contains module/platform specific
 		configuration in <iphone> and <android> sections
 	-->
+	
 	<iphone>
 	</iphone>
 	<android xmlns:android="http://schemas.android.com/apk/res/android">
+		<manifest>
+		    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+		    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+		
+		    <application>
+		        <activity android:name="droidninja.filepicker.FilePickerActivity" />
+		        <activity android:name="droidninja.filepicker.MediaDetailsActivity" />
+		        
+		        <provider
+		            android:name="droidninja.filepicker.utils.FilePickerProvider"
+		            android:authorities="${applicationId}.droidninja.filepicker.provider"
+		            android:exported="false"
+		            android:grantUriPermissions="true" >
+		            <meta-data
+		                android:name="android.support.FILE_PROVIDER_PATHS"
+		                android:resource="@xml/provider_paths" />
+		        </provider>
+		    </application>
+		</manifest>
 	</android>
 </ti:module>
