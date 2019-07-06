@@ -65,6 +65,16 @@ public class Utils {
 		
 		return value;
 	}
+	
+	public static boolean getBoolOption(KrollDict options, String key, boolean defaultValue) {
+		boolean value = defaultValue;
+		 
+		if (options.containsKeyAndNotNull(key)) {
+			value = TiConvert.toBoolean(options.get(key), defaultValue);
+		}
+		
+		return value;
+	}
 }
 
 
