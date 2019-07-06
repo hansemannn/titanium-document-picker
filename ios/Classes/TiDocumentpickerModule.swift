@@ -26,14 +26,14 @@ class TiDocumentpickerModule: TiModule {
   @objc(showDocumentPicker:)
   func showDocumentPicker(arguments: [[String: Any]]?) {
 
-    let types = [String(kUTTypeText), String(kUTTypeContent), String(kUTTypeItem), String(kUTTypeData)]
+    let types = [String(kUTTypePDF)]
     let picker = UIDocumentPickerViewController(documentTypes: types, in: .import)
     
     picker.delegate = self
 
-    if #available(iOS 11.0, *) {
-      picker.allowsMultipleSelection = true
-    }
+//    if #available(iOS 11.0, *) {
+//      picker.allowsMultipleSelection = true
+//    }
     
     guard let controller = TiApp.controller(), let topPresentedController = controller.topPresentedController() else {
       print("[WARN] No window opened. Ignoring gallery call …")
