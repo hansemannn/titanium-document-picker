@@ -1,39 +1,42 @@
-// This is a test harness for your module
-// You should do something interesting in this harness
-// to test out the module and to provide instructions
-// to users on how to use it by example.
 
+var win = Ti.UI.createWindow({backgroundColor:'white'});
 
-// open a single window
-var win = Ti.UI.createWindow({
-	backgroundColor:'white'
-});
-var label = Ti.UI.createLabel();
-win.add(label);
+var button = Ti.UI.createButton({title : 'Open File Picker'});
+button.addEventListener('click', showFilePicker);
+
+win.add(button);
 win.open();
 
-// TODO: write your module tests here
-var titanium_document_picker = require('ti.documentpicker');
-Ti.API.info("module is => " + titanium_document_picker);
 
-label.text = titanium_document_picker.example();
 
-Ti.API.info("module exampleProp is => " + titanium_document_picker.exampleProp);
-titanium_document_picker.exampleProp = "This is a test value";
+function showFilePicker() {
+	if (OS_ANDROID) {
+		var ti_filepicker = require('ti.filepicker');
 
-if (Ti.Platform.name == "android") {
-	var proxy = titanium_document_picker.createExample({
-		message: "Creating an example Proxy",
-		backgroundColor: "red",
-		width: 100,
-		height: 100,
-		top: 100,
-		left: 150
-	});
+		ti_filepicker.pick({
+			'fileType' : ti_filepicker.FILE_TYPE_MEDIA,		// or 'FILE_TYPE_DOC', {Optional} {default 'FILE_TYPE_DOC'}
+			'maxCount' : 5,					// 'integer' {Optional} (Total files to select) - Must be greater than 0
+			'theme' : 'MyCustomTheme',		// 'string' {Optional} {default 'LibAppTheme'} - Any non-action bar theme without `@style.` prefix
+			'title' : 'All files',			// 'string' {Optional} {default 'Select Files'} - Title of the selection window
+			'enableVideoPicker' : false,	// 'boolean' {Optional} {default 'true'} - Enable the selection of video files
+			'enableImagePicker' : false,	// 'boolean' {Optional} {default 'true'} - Enable the selection of image files
+			'enableSelectAll' : false,		// 'boolean' {Optional} {default 'true'} - Enable the selection/de-selection of all files, doesn't obey 'maxCount'
+			'enableGif' : false,			// 'boolean' {Optional} {default 'false'} - Enable the selection of GIF files
+			'enableFolderView' : false,		// 'boolean' {Optional} {default 'true'} - Enable the folder-view UI
+			'enableDocSupport' : false,		// 'boolean' {Optional} {default 'true'} - Enable the selection of documents type files
+			'enableCameraSupport' : false,	// 'boolean' {Optional} {default 'true'} - Enable the camera-icon to take new pictures
+			'selectedFiles' : '',			// Not supported yet
+			'cameraIcon' : '',				// Not supported yet
+			'orientation' : '',				// Not supported yet, but follows the app's orientation
 
-	proxy.printMessage("Hello world!");
-	proxy.message = "Hi world!.  It's me again.";
-	proxy.printMessage("Hello world!");
-	win.add(proxy);
+			'callback' : function (result) {
+				if (result.success) {
+					Ti.API.info('Files - ' + JSON.stringify(result.files));
+
+				} else {
+					alert(result.message);
+				}
+			},
+		});
+	}
 }
-
