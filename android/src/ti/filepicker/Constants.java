@@ -21,6 +21,19 @@ public class Constants {
 		
 		// input parameters
 		static final String FILE_TYPE = "fileType";
+		static final String MAX_COUNT = "maxCount";
+		static final String THEME = "theme";
+		static final String TITLE = "title";
+		static final String SELECTED_FILES = "selectedFiles";
+		static final String CAMERA_ICON = "cameraIcon";
+		static final String ORIENTATION = "orientation";
+		static final String ENABLE_VIDEO_PICKER = "enableVideoPicker";
+		static final String ENABLE_IMAGE_PICKER = "enableImagePicker";
+		static final String SELECT_ALL = "enableSelectAll";
+		static final String ENABLE_GIFS = "enableGif";
+		static final String ENABLE_FOLDER_VIEW = "enableFolderView";
+		static final String ENABLE_DOC_SUPPORT = "enableDocSupport";
+		static final String ENABLE_CAMERA_SUPPORT = "enableCameraSupport";
 	}
 }
 

@@ -15,4 +15,4 @@ name: ti-filepicker
 moduleid: ti.filepicker
 guid: 50d983b2-da78-4a88-9466-346ce98518cc
 platform: android
-minsdk: 8.0.2.GA
+minsdk: 8.0.0.GA

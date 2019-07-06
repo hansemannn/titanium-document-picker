@@ -18,6 +18,7 @@ import org.appcelerator.titanium.util.TiActivityResultHandler;
 import android.app.Activity;
 import android.content.Intent;
 import droidninja.filepicker.FilePickerBuilder;
+
 import org.appcelerator.kroll.common.Log;
 
 
@@ -25,56 +26,96 @@ import org.appcelerator.kroll.common.Log;
 public class TiFilepickerModule extends KrollModule implements TiActivityResultHandler {
 	@Kroll.constant
 	public static final int FILE_TYPE_MEDIA = Constants.FILE_TYPE_MEDIA;
-	
+
 	@Kroll.constant
 	public static final int FILE_TYPE_DOC = Constants.FILE_TYPE_DOC;
-	
+
 	private KrollFunction callback = null;
-	
-	
+
+
 	public TiFilepickerModule() {
 		super();
 	}
 
-	
+
 	@Kroll.onAppCreate
 	public static void onAppCreate(TiApplication app) {
 		Log.d(Constants.LCAT, "inside onAppCreate");
 		// put module init code that needs to run when the application is created
 	}
-	
-	
+
+
 	// applies methods on FilePickerBuilder instance for properties passed in the module
 	private void applyBuilderMethods(FilePickerBuilder filePickerBuilder, KrollDict options) {
+		String title = Utils.getStringOption(options, Constants.Params.TITLE);
+		String theme = Utils.getStringOption(options, Constants.Params.THEME);
+		int maxCount = Utils.getIntOption(options, Constants.Params.MAX_COUNT);
+		boolean enableVideoPicker = Utils.getBoolOption(options, Constants.Params.ENABLE_VIDEO_PICKER);
+		boolean enableImagePicker = Utils.getBoolOption(options, Constants.Params.ENABLE_IMAGE_PICKER);
+		boolean enableSelectAll = Utils.getBoolOption(options, Constants.Params.SELECT_ALL);
+		boolean enableGif = Utils.getBoolOption(options, Constants.Params.ENABLE_GIFS);
+		boolean enableFolderView = Utils.getBoolOption(options, Constants.Params.ENABLE_FOLDER_VIEW);
+		boolean enableDocSupport = Utils.getBoolOption(options, Constants.Params.ENABLE_DOC_SUPPORT);
+		boolean enableCameraSupport = Utils.getBoolOption(options, Constants.Params.ENABLE_CAMERA_SUPPORT);
 		
+		if (!title.isEmpty()) {
+			filePickerBuilder.setActivityTitle(title);
+		}
+		
+		if (!theme.isEmpty()) {
+			filePickerBuilder.setActivityTheme(Utils.getR("style." + theme));
+		}
+		
+		if (-1 != maxCount && maxCount > 0) {
+			filePickerBuilder.setMaxCount(maxCount);
+		}
+		
+		filePickerBuilder.enableVideoPicker(enableVideoPicker);
+		filePickerBuilder.enableImagePicker(enableImagePicker);
+		filePickerBuilder.enableSelectAll(enableSelectAll);
+		filePickerBuilder.showGifs(enableGif);
+		filePickerBuilder.showFolderView(enableFolderView);
+		filePickerBuilder.enableDocSupport(enableDocSupport);
+		filePickerBuilder.enableCameraSupport(enableCameraSupport);
 	}
 
-	
+
 	@Kroll.method
 	public void pickFile(@Kroll.argument(optional=true) KrollDict options) {
 		// reset the callback to use the new passed callback's reference
 		callback = null;
-		
+
 		if (null != options) {
 			if (options.containsKeyAndNotNull(Constants.Params.CALLBACK) && options.get(Constants.Params.CALLBACK) instanceof KrollFunction) {
 				callback = (KrollFunction) options.get(Constants.Params.CALLBACK);
+				Log.i(Constants.LCAT, "callback method passed");
 			}
 		}
-		
+
+		if (null == callback) {
+			Log.e(Constants.LCAT, "No callback method passed");
+			return;
+		}
+
 		if (Utils.hasStoragePermissions()) {
+			Log.i(Constants.LCAT, "Storage permissions available");
 			Activity activity = TiApplication.getInstance().getRootOrCurrentActivity();
-			
+
 			FilePickerBuilder filePickerBuilder = FilePickerBuilder.getInstance();
+			filePickerBuilder.setMaxCount(5);
 			applyBuilderMethods(filePickerBuilder, options);
-			
+			Log.i(Constants.LCAT, "filePickerBuilder - " + filePickerBuilder);
+
 			// open document picker by default
 			if (Constants.FILE_TYPE_MEDIA == (int) options.getOrDefault(Constants.Params.FILE_TYPE, FILE_TYPE_MEDIA)) {
+				Log.i(Constants.LCAT, "filePickerBuilder photo pick");
 				filePickerBuilder.pickPhoto(activity, Constants.REQUEST_CODE_MEDIA);
-				
+
 			} else {
+				Log.i(Constants.LCAT, "filePickerBuilder doc pick");
 				filePickerBuilder.pickFile(activity, Constants.REQUEST_CODE_DOCS);
 			}
-			
+
 		} else {
 			Log.e(Constants.LCAT, "Storage permissions are denied.");
 			KrollDict result = new KrollDict();
@@ -83,21 +124,22 @@ public class TiFilepickerModule extends KrollModule implements TiActivityResultH
 		}
 	}
 
-	
+
 	@Override
 	public void onResult(Activity activity, int thisRequestCode, int resultCode, Intent data) {
 		if (callback == null) return;
+		Log.i(Constants.LCAT, "filePickerBuilder result received...");
 		KrollDict result = new ResultHandler().onResult(thisRequestCode, resultCode, data);
 		callback.callAsync(getKrollObject(), result);
 	}
 
-	
+
 	@Override
 	public void onError(Activity activity, int requestCode, Exception e) {
-		if (callback == null) return;		
+		if (callback == null) return;
+		Log.e(Constants.LCAT, "filePickerBuilder result error...");
 		KrollDict result = new ResultHandler().onError(requestCode, e);
 		callback.callAsync(getKrollObject(), result);
 	}
 
 }
-

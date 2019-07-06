@@ -18,7 +18,7 @@
 		        
 		        <provider
 		            android:name="droidninja.filepicker.utils.FilePickerProvider"
-		            android:authorities="${applicationId}.droidninja.filepicker.provider"
+		            android:authorities="${tiapp.properties['id']}.droidninja.filepicker.provider"
 		            android:exported="false"
 		            android:grantUriPermissions="true" >
 		            <meta-data
