@@ -1,6 +1,7 @@
 package ti.filepicker;
 
 
+
 import org.appcelerator.kroll.KrollDict;
 import org.appcelerator.titanium.TiApplication;
 import org.appcelerator.titanium.util.TiConvert;
@@ -74,6 +75,15 @@ public class Utils {
 		}
 		
 		return value;
+	}
+	
+	public static String[] getArrayOption(KrollDict options, String key) {
+		if (options.containsKeyAndNotNull(key)) {
+			return options.getStringArray(key);
+			
+		} else {
+			return null;
+		}
 	}
 }
 
