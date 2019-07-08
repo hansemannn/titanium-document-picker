@@ -9,7 +9,16 @@
     <color name="row_active">#efefef</color>
     <color name="search_icon_color">@android:color/white</color>
     <color name="transparent_black">#94333232</color>
-    <declare-styleable name="SmoothCheckBox"><attr format="integer" name="duration"/><attr format="dimension" name="stroke_width"/><attr format="color" name="color_tick"/><attr format="color" name="color_checked"/><attr format="color" name="color_unchecked"/><attr format="color" name="color_unchecked_stroke"/></declare-styleable>
+    
+    <declare-styleable name="SmoothCheckBox">
+    		<attr format="integer" name="duration"/>
+    		<attr format="dimension" name="stroke_width"/>
+    		<attr format="color" name="color_tick"/>
+    		<attr format="color" name="color_checked"/>
+    		<attr format="color" name="color_unchecked"/>
+    		<attr format="color" name="color_unchecked_stroke"/>
+    	</declare-styleable>
+    
     <dimen name="file_icon_height">40dp</dimen>
     <dimen name="file_icon_width">40dp</dimen>
     <dimen name="file_item_checkbox_size">22dp</dimen>

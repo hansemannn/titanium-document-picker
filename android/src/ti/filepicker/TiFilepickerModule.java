@@ -60,7 +60,7 @@ public class TiFilepickerModule extends KrollModule implements TiActivityResultH
 		int maxCount = Utils.getIntOption(options, Constants.Params.MAX_COUNT);
 		boolean enableVideoPicker = Utils.getBoolOption(options, Constants.Params.ENABLE_VIDEO_PICKER);
 		boolean enableImagePicker = Utils.getBoolOption(options, Constants.Params.ENABLE_IMAGE_PICKER);
-		boolean enableSelectAll = Utils.getBoolOption(options, Constants.Params.SELECT_ALL);
+		boolean enableSelectAll = Utils.getBoolOption(options, Constants.Params.SELECT_ALL, false);
 		boolean enableGif = Utils.getBoolOption(options, Constants.Params.ENABLE_GIFS, false);
 		boolean enableFolderView = Utils.getBoolOption(options, Constants.Params.ENABLE_FOLDER_VIEW);
 		boolean enableDocSupport = Utils.getBoolOption(options, Constants.Params.ENABLE_DOC_SUPPORT);
