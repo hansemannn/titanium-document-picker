@@ -13,33 +13,32 @@ import UIKit
 @objc(TiDocumentpickerModule)
 class TiDocumentpickerModule: TiModule {
 
-  public let testProperty: String = "Hello World"
-  
   func moduleGUID() -> String {
     return "3f4e12c8-b5ff-46a1-a20f-1be2d8b8c5c8"
   }
-  
+
   override func moduleId() -> String! {
     return "ti.documentpicker"
   }
 
+  private var onSelectCallback: KrollCallback?
+
   @objc(showDocumentPicker:)
   func showDocumentPicker(arguments: [[String: Any]]?) {
-
-    let types = [String(kUTTypePDF)]
+    let types = [String(kUTTypePDF), String(kUTTypePNG), String(kUTTypeJPEG)]
     let picker = UIDocumentPickerViewController(documentTypes: types, in: .import)
-    
+
+    if let arguments = arguments, arguments.first != nil {
+      onSelectCallback = arguments.first?["onSelect"] as? KrollCallback
+    }
+
     picker.delegate = self
 
-//    if #available(iOS 11.0, *) {
-//      picker.allowsMultipleSelection = true
-//    }
-    
     guard let controller = TiApp.controller(), let topPresentedController = controller.topPresentedController() else {
       print("[WARN] No window opened. Ignoring gallery call …")
       return
     }
-    
+
     topPresentedController.present(picker, animated: true, completion: nil)
   }
 }
@@ -49,15 +48,15 @@ class TiDocumentpickerModule: TiModule {
 extension TiDocumentpickerModule: UIDocumentPickerDelegate {
 
   func documentPickerWasCancelled(_ controller: UIDocumentPickerViewController) {
-    fireEvent("cancel")
+    // No-OP
   }
-  
+
   func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
-    fireEvent("success", with: ["documents": urls.map { $0.absoluteString }])
+    onSelectCallback?.call([["documents": urls.map { $0.absoluteString } ]], thisObject: self)
   }
-  
-  // DEPRECATED: iOS < 10 compatibility
+
+  // DEPRECATED: iOS < 11 compatibility
   func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentAt url: URL) {
-    fireEvent("success", with: ["documents": [url]])
+    onSelectCallback?.call([["documents": [url.absoluteString] ]], thisObject: self)
   }
 }
