@@ -2,9 +2,9 @@
 # this is your module manifest and used by Titanium
 # during compilation, packaging, distribution, etc.
 #
-version: 1.0.0
+version: 2.0.0
 apiversion: 4
-architectures: arm64-v8a armeabi-v7a x86
+architectures: arm64-v8a armeabi-v7a x86 x86_64
 description: Lets you pick images, videos, pdfs and other docs on Android.
 author: Prashant Saini
 license: Specify your license
@@ -15,4 +15,4 @@ name: ti-filepicker
 moduleid: ti.filepicker
 guid: 50d983b2-da78-4a88-9466-346ce98518cc
 platform: android
-minsdk: 8.0.0.GA
+minsdk: 9.0.0

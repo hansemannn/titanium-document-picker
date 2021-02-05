@@ -14,175 +14,195 @@ import org.appcelerator.kroll.KrollDict;
 import org.appcelerator.kroll.KrollFunction;
 import org.appcelerator.kroll.KrollModule;
 import org.appcelerator.kroll.annotations.Kroll;
-
 import org.appcelerator.titanium.TiApplication;
+import org.appcelerator.titanium.TiC;
 import org.appcelerator.titanium.util.TiActivityResultHandler;
 import org.appcelerator.titanium.util.TiActivitySupport;
+import org.appcelerator.kroll.common.Log;
+import org.appcelerator.titanium.util.TiConvert;
+import org.appcelerator.titanium.util.TiIntentWrapper;
 
 import android.app.Activity;
+import android.content.ClipData;
+import android.content.ContentResolver;
 import android.content.Intent;
-import droidninja.filepicker.FilePickerBuilder;
-import droidninja.filepicker.FilePickerConst;
-
-import org.appcelerator.kroll.common.Log;
-
+import android.net.Uri;
 
 @Kroll.module(name="TiFilepicker", id="ti.filepicker")
-public class TiFilepickerModule extends KrollModule implements TiActivityResultHandler {
-	@Kroll.constant
-	public static final int FILE_TYPE_MEDIA = Constants.FILE_TYPE_MEDIA;
+public class TiFilepickerModule extends KrollModule {
 
-	@Kroll.constant
-	public static final int FILE_TYPE_DOC = Constants.FILE_TYPE_DOC;
+    public static final String TAG = "TiFilepickerModule";
 
-	KrollFunction callback = null;
+    private static ContentResolver contentResolver;
 
+    public TiFilepickerModule()
+    {
+        super();
 
-	public TiFilepickerModule() {
-		super();
-	}
+        if (contentResolver == null) {
+            contentResolver = TiApplication.getInstance().getContentResolver();
+        }
+    }
 
+    @Kroll.method
+    public void pick(KrollDict options)
+    {
+        KrollFunction callback = null;
 
-	@Kroll.onAppCreate
-	public static void onAppCreate(TiApplication app) {
-		Log.d(Constants.LCAT, "inside onAppCreate");
-		// put module init code that needs to run when the application is created
-	}
+        if (options.containsKey("callback")) {
+            callback = (KrollFunction) options.get("callback");
+        }
 
+        final KrollFunction fCallback = callback;
 
-	// applies methods on FilePickerBuilder instance for properties passed in the module
-	private FilePickerBuilder createBuilder(KrollDict options) {
-		FilePickerBuilder filePickerBuilder = FilePickerBuilder.getInstance();
-		
-		String title = Utils.getStringOption(options, Constants.Params.TITLE);
-		String theme = Utils.getStringOption(options, Constants.Params.THEME);
-		String cameraIcon = Utils.getStringOption(options, Constants.Params.CAMERA_ICON);
-		int maxCount = Utils.getIntOption(options, Constants.Params.MAX_COUNT);
-		boolean enableVideoPicker = Utils.getBoolOption(options, Constants.Params.ENABLE_VIDEO_PICKER);
-		boolean enableImagePicker = Utils.getBoolOption(options, Constants.Params.ENABLE_IMAGE_PICKER);
-		boolean enableSelectAll = Utils.getBoolOption(options, Constants.Params.SELECT_ALL, false);
-		boolean enableGif = Utils.getBoolOption(options, Constants.Params.ENABLE_GIFS, false);
-		boolean enableFolderView = Utils.getBoolOption(options, Constants.Params.ENABLE_FOLDER_VIEW);
-		boolean enableDocSupport = Utils.getBoolOption(options, Constants.Params.ENABLE_DOC_SUPPORT);
-		boolean enableCameraSupport = Utils.getBoolOption(options, Constants.Params.ENABLE_CAMERA_SUPPORT);
-		
-		String[] selectedFiles = Utils.getArrayOption(options, Constants.Params.SELECTED_FILES);
-		ArrayList<String> selectedFilesList = new ArrayList<String>();
-		
-		if (!title.isEmpty()) {
-			filePickerBuilder.setActivityTitle(title);
-		}
-		
-		if (theme.isEmpty()) {
-			theme = "LibAppTheme";	
-		}
-		
-		if (maxCount > 0) {
-			filePickerBuilder.setMaxCount(maxCount);
-		}
-		
-		if (!cameraIcon.isEmpty()) {
-			int cameraDrawable = Utils.getR("drawable." + cameraIcon);
-			if (cameraDrawable != -1) {
-				filePickerBuilder.setCameraPlaceholder(cameraDrawable);
-			}
-		}
-		
-		if (selectedFiles != null && selectedFiles.length > 0) {
-			// remove the possible titanium specific `file://` prefix
-			for (String filePath : selectedFiles) {
-				selectedFilesList.add( filePath.replaceFirst(Constants.TI_FILE_PREFIX, "") );
-			}
-		}
-		
-		filePickerBuilder.setSelectedFiles(selectedFilesList);
-		filePickerBuilder.setActivityTheme(Utils.getR("style." + theme));
-		filePickerBuilder.enableVideoPicker(enableVideoPicker);
-		filePickerBuilder.enableImagePicker(enableImagePicker);
-		filePickerBuilder.enableSelectAll(enableSelectAll);
-		filePickerBuilder.showGifs(enableGif);
-		filePickerBuilder.showFolderView(enableFolderView);
-		filePickerBuilder.enableDocSupport(enableDocSupport);
-		filePickerBuilder.enableCameraSupport(enableCameraSupport);
-		
-		return filePickerBuilder;
-	}
-	
-	
-	private void launchFilePicker(TiActivitySupport tiActivitySupport, Intent filePickerIntent, int requestCode) {
-		if (filePickerIntent != null) {
-			tiActivitySupport.launchActivityForResult(filePickerIntent, requestCode, this);
-			
-		} else {
-			Log.w(Constants.LCAT, "filePickerIntent null");
-		}
-	}
+        Activity activity = TiApplication.getInstance().getCurrentActivity();
+        TiActivitySupport activitySupport = (TiActivitySupport) activity;
 
+        TiIntentWrapper galleryIntent = new TiIntentWrapper(new Intent());
+        galleryIntent.getIntent().setAction(Intent.ACTION_GET_CONTENT);
 
-	@Kroll.method
-	public void pick(@Kroll.argument(optional=true) KrollDict options) {
-		// reset the callback to use the new passed callback's reference
-		callback = null;
+        // Set media type to PDF
+        galleryIntent.getIntent().setType("application/pdf");
 
-		if (null != options) {
-			if (options.containsKeyAndNotNull(Constants.Params.CALLBACK) && options.get(Constants.Params.CALLBACK) instanceof KrollFunction) {
-				callback = (KrollFunction) options.get(Constants.Params.CALLBACK);
-			}
-		}
+        galleryIntent.getIntent().addCategory(Intent.CATEGORY_DEFAULT);
+        galleryIntent.setWindowId(TiIntentWrapper.createActivityName("GALLERY"));
 
-		if (null == callback) {
-			Log.w(Constants.LCAT, "No callback method passed");
-			return;
-		}
+        final int PICK_IMAGE_SINGLE = activitySupport.getUniqueResultCode();
+        final int PICK_IMAGE_MULTIPLE = activitySupport.getUniqueResultCode();
+        boolean allowMultiple = false;
 
-		if (Utils.hasStoragePermissions()) {
-			Activity activity = TiApplication.getAppCurrentActivity();
-			TiActivitySupport tiActivitySupport = (TiActivitySupport) activity;
-			
-			// create file-picker-builder and apply the passed properties
-			FilePickerBuilder filePickerBuilder = createBuilder(options);
+        if (options.containsKey(TiC.PROPERTY_ALLOW_MULTIPLE)) {
+            allowMultiple = TiConvert.toBoolean(options.get(TiC.PROPERTY_ALLOW_MULTIPLE));
+            galleryIntent.getIntent().putExtra(Intent.EXTRA_ALLOW_MULTIPLE, allowMultiple);
+        }
 
-			// open document picker by default
-			if (Constants.FILE_TYPE_MEDIA == (int) options.getOrDefault(Constants.Params.FILE_TYPE, FILE_TYPE_MEDIA)) {
-				launchFilePicker(tiActivitySupport, filePickerBuilder.pickPhoto(activity), FilePickerConst.REQUEST_CODE_PHOTO);
+        final int code = allowMultiple ? PICK_IMAGE_MULTIPLE : PICK_IMAGE_SINGLE;
 
-			} else {
-				launchFilePicker(tiActivitySupport, filePickerBuilder.pickFile(activity), FilePickerConst.REQUEST_CODE_DOC);
-			}
+        activitySupport.launchActivityForResult(galleryIntent.getIntent(), code, new TiActivityResultHandler() {
+            @Override
+            public void onResult(Activity activity, int requestCode, int resultCode, Intent data)
+            {
+                if (requestCode != code) {
+                    return;
+                }
 
-		} else {
-			Log.e(Constants.LCAT, "Error: Storage permissions not available");
-			KrollDict result = new KrollDict();
-			result.put(Constants.Params.RESULT_PROPERTY_CANCEL, false);
-			result.put(Constants.Params.RESULT_PROPERTY_ERROR, true);
-			result.put(Constants.Params.RESULT_PROPERTY_SUCCESS, false);
-			result.put(Constants.Params.RESULT_PROPERTY_MESSAGE, "Error: Storage permissions not available");
-			callback.callAsync(getKrollObject(), result);
-		}
-	}
-	
+                if ((resultCode == Activity.RESULT_CANCELED) || (data == null)) {
+                    if (fCallback != null) {
+                        KrollDict response = new KrollDict();
+                        response.put("success", true);
+                        response.put("cancel", true);
+                        response.put("files", new ArrayList<String>().toArray(new String[0]));
 
-	@Override
-	public void onResult(Activity activity, int thisRequestCode, int resultCode, Intent data) {
-		if (callback == null) {
-			Log.e(Constants.LCAT, "Error: callback is null");
-			return;
-		}
-		
-		KrollDict result = new ResultHandler().onResult(thisRequestCode, resultCode, data);
-		callback.callAsync(getKrollObject(), result);
-	}
+                        fCallback.callAsync(getKrollObject(), response);
+                    }
+                    return;
+                }
 
+                // Fetch a URI to file selected. (Only applicable to single file selection.)
+                Uri uri = data.getData();
+                String path = (uri != null) ? uri.toString() : null;
 
-	@Override
-	public void onError(Activity activity, int requestCode, Exception e) {
-		if (callback == null) {
-			Log.e(Constants.LCAT, "Error: callback is null");
-			return;
-		}
-		
-		KrollDict result = new ResultHandler().onError(requestCode, e);
-		callback.callAsync(getKrollObject(), result);
-	}
+                // Handle multiple file selection, if enabled.
+                if (requestCode == PICK_IMAGE_MULTIPLE) {
+                    // Wrap all selected file(s) in Titanium "CameraMediaItemType" dictionaries.
+                    ArrayList<String> selectedFiles = new ArrayList<>();
+                    ClipData clipData = data.getClipData();
+                    if (clipData != null) {
+                        // Fetch file(s) from clip data.
+                        int count = clipData.getItemCount();
+                        for (int index = 0; index < count; index++) {
+                            ClipData.Item item = clipData.getItemAt(index);
+                            if ((item == null) || (item.getUri() == null)) {
+                                continue;
+                            }
+                            selectedFiles.add(item.getUri().toString());
+                        }
+                    } else if (path != null) {
+                        // Only a single file was found.
+                        selectedFiles.add(path);
+                    }
 
+                    // Copy each selected file to either an "images" or "videos" collection.
+
+                    ArrayList<String> selectedDocuments = new ArrayList<>(selectedFiles);
+
+                    // Invoke a callback with the selection result.
+                    if (selectedDocuments.isEmpty()) {
+                        if (selectedFiles.isEmpty()) {
+                            // Invoke the "cancel" callback if no files were selected.
+                            if (fCallback != null) {
+                                KrollDict response = new KrollDict();
+                                response.put("success", true);
+                                response.put("cancel", true);
+                                response.put("files", new ArrayList<String>().toArray(new String[0]));
+
+                                fCallback.callAsync(getKrollObject(), response);
+                            }
+                        } else {
+                            // Invoke the "error" callback if non-image/video files were selected.
+                            String message = "Invalid file types were selected";
+                            Log.e(TAG, message);
+                            if (fCallback != null) {
+                                KrollDict response = new KrollDict();
+                                response.put("success", false);
+
+                                fCallback.callAsync(getKrollObject(), response);
+                            }
+                        }
+                    } else {
+                        // Invoke the "success" callback with the selected file(s).
+                        if (fCallback != null) {
+                            KrollDict response = new KrollDict();
+                            response.put("success", true);
+                            response.put("files", selectedDocuments.toArray(new String[0]));
+                            fCallback.callAsync(getKrollObject(), response);
+                        }
+                    }
+                    return;
+                }
+
+                // Handle single file selection.
+                try {
+                    //Check for invalid path
+                    if (path == null) {
+                        String msg = "File path is invalid";
+                        Log.e(TAG, msg);
+                        if (fCallback != null) {
+                            fCallback.callAsync(getKrollObject(), createErrorResponse(1, msg));
+                        }
+                        return;
+                    }
+                    if (fCallback != null) {
+                        ArrayList<String> selectedDocuments = new ArrayList<>();
+                        selectedDocuments.add(path);
+
+                        KrollDict response = new KrollDict();
+                        response.put("success", true);
+                        response.put("files", selectedDocuments.toArray(new String[0]));
+
+                        fCallback.callAsync(getKrollObject(), response);
+                    }
+                } catch (OutOfMemoryError e) {
+                    String msg = "Not enough memory to get image: " + e.getMessage();
+                    Log.e(TAG, msg);
+                    if (fCallback != null) {
+                        fCallback.callAsync(getKrollObject(), createErrorResponse(1, msg));
+                    }
+                }
+            }
+
+            @Override
+            public void onError(Activity activity, int requestCode, Exception e)
+            {
+                if (requestCode != code) {
+                    return;
+                }
+                String msg = "Gallery problem: " + e.getMessage();
+                Log.e(TAG, msg, e);
+                if (fCallback != null) {
+                    fCallback.callAsync(getKrollObject(), createErrorResponse(1, msg));
+                }
+            }
+        });
+    }
 }
