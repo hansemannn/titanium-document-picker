@@ -37,3 +37,4 @@ android/.project
 android/platform/README.md
 /ios/dist
 /android/.gradle
+android/dist/ti.filepicker-android-*.zip
