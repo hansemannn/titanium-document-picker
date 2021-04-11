@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		3A090E6025841246003D6CCC /* TitaniumKit.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A090E5F25841246003D6CCC /* TitaniumKit.xcframework */; };
+		3A32F9DD2622D9BC00AB66B7 /* TitaniumKit.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A32F9DC2622D9BC00AB66B7 /* TitaniumKit.xcframework */; };
 		DB34CDE0207B998A005F8E8C /* TiDocumentpickerModuleAssets.m in Sources */ = {isa = PBXBuildFile; fileRef = DB34CDDE207B998A005F8E8C /* TiDocumentpickerModuleAssets.m */; };
 		DB34CDE1207B998A005F8E8C /* TiDocumentpickerModuleAssets.h in Headers */ = {isa = PBXBuildFile; fileRef = DB34CDDF207B998A005F8E8C /* TiDocumentpickerModuleAssets.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		DB34CDE6207B9EBD005F8E8C /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DB34CDE5207B9EBD005F8E8C /* Foundation.framework */; };
@@ -17,7 +17,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		3A090E5F25841246003D6CCC /* TitaniumKit.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = TitaniumKit.xcframework; path = "../../../../../Library/Application Support/Titanium/mobilesdk/osx/9.2.2.GA/iphone/Frameworks/TitaniumKit.xcframework"; sourceTree = "<group>"; };
+		3A32F9DC2622D9BC00AB66B7 /* TitaniumKit.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = TitaniumKit.xcframework; path = "$(TITANIUM_SDK)/iphone/Frameworks/TitaniumKit.xcframework"; sourceTree = "<group>"; };
 		DB34CDDE207B998A005F8E8C /* TiDocumentpickerModuleAssets.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TiDocumentpickerModuleAssets.m; path = Classes/TiDocumentpickerModuleAssets.m; sourceTree = SOURCE_ROOT; };
 		DB34CDDF207B998A005F8E8C /* TiDocumentpickerModuleAssets.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TiDocumentpickerModuleAssets.h; path = Classes/TiDocumentpickerModuleAssets.h; sourceTree = SOURCE_ROOT; };
 		DB34CDE5207B9EBD005F8E8C /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -35,7 +35,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				DB34CDE6207B9EBD005F8E8C /* Foundation.framework in Frameworks */,
-				3A090E6025841246003D6CCC /* TitaniumKit.xcframework in Frameworks */,
+				3A32F9DD2622D9BC00AB66B7 /* TitaniumKit.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -66,7 +66,7 @@
 		DB34CDE2207B9D6A005F8E8C /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				3A090E5F25841246003D6CCC /* TitaniumKit.xcframework */,
+				3A32F9DC2622D9BC00AB66B7 /* TitaniumKit.xcframework */,
 				DB34CDE5207B9EBD005F8E8C /* Foundation.framework */,
 			);
 			name = Frameworks;
@@ -139,7 +139,7 @@
 		DB52E2211E9CCD7000AAAEE0 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 1220;
+				LastUpgradeCheck = 1240;
 				TargetAttributes = {
 					DB52E2291E9CCD7000AAAEE0 = {
 						CreatedOnToolsVersion = 8.3;

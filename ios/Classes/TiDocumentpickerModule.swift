@@ -2,8 +2,8 @@
 //  TiDocumentpickerModule.swift
 //  titanium-document-picker
 //
-//  Created by Your Name
-//  Copyright (c) 2019 Your Company. All rights reserved.
+//  Created by Hans Knöchel
+//  Copyright (c) 2019-present Hans Knöchel. No rights reserved.
 //
 
 import MobileCoreServices
@@ -25,14 +25,25 @@ class TiDocumentpickerModule: TiModule {
 
   @objc(showDocumentPicker:)
   func showDocumentPicker(arguments: [[String: Any]]?) {
-    let types = [String(kUTTypePDF), String(kUTTypePNG), String(kUTTypeJPEG)]
+    guard let arguments = arguments, let params = arguments.first else { return }
+
+    onSelectCallback = params["onSelect"] as? KrollCallback
+
+    let types = mappedTypes(from: params["types"] as? [String])
+    let allowsMultipleSelection = params["allowsMultipleSelection"] as? Bool ?? false
+    let shouldShowFileExtensions = params["shouldShowFileExtensions"] as? Bool ?? false
+    let directoryURL = TiUtils.stringValue(params["directoryURL"])
     let picker = UIDocumentPickerViewController(documentTypes: types, in: .import)
-
-    if let arguments = arguments, arguments.first != nil {
-      onSelectCallback = arguments.first?["onSelect"] as? KrollCallback
-    }
-
+    
     picker.delegate = self
+    picker.allowsMultipleSelection = allowsMultipleSelection
+
+    if #available(iOS 13.0, *) {
+      picker.shouldShowFileExtensions = shouldShowFileExtensions
+      if let directoryURL = directoryURL {
+        picker.directoryURL = URL(string: directoryURL)
+      }
+    }
 
     guard let controller = TiApp.controller(), let topPresentedController = controller.topPresentedController() else {
       print("[WARN] No window opened. Ignoring gallery call …")
@@ -41,6 +52,15 @@ class TiDocumentpickerModule: TiModule {
 
     topPresentedController.present(picker, animated: true, completion: nil)
   }
+  
+  private func mappedTypes(from proxyValues: [String]?) -> [String] {
+    // Default: Only PDF, PNG and JPEG for backwards compatibility
+    guard let proxyValues = proxyValues else {
+      return [String(kUTTypePDF), String(kUTTypePNG), String(kUTTypeJPEG)]
+    }
+
+    return proxyValues
+  }
 }
 
 // MARK: UIDocumentPickerDelegate
@@ -48,7 +68,7 @@ class TiDocumentpickerModule: TiModule {
 extension TiDocumentpickerModule: UIDocumentPickerDelegate {
 
   func documentPickerWasCancelled(_ controller: UIDocumentPickerViewController) {
-    // No-OP
+    // NO-OP for now
   }
 
   func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
