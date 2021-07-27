@@ -2,6 +2,12 @@
 
 The the native document pickers (iOS / Android) to select files from the local device, iCloud (iOS) and Google Storage (Android).
 
+## Todo's
+
+- [ ] Currently, the Android module import is `ti.filepicker`, on iOS it's `ti.documentpicker`
+- [ ] Both modules may not have full parity on the file selection
+- [ ] Add cross-platform example (currently the example/app.js is Android-only) 
+
 ## Example
 
 ```js
