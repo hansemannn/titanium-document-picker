@@ -27,9 +27,8 @@ btn.addEventListener("click", function(e) {
 		allowMultiple: false,
 		allowsMultipleSelection: false,
 		onSelect: function(result) {
-			if (result.success) {
-				Ti.API.info('Files - ' + JSON.stringify(result.documents));
-			} else {
+			Ti.API.info('Files - ' + JSON.stringify(result.documents));
+			if (OS_ANDROID && result.success === false) {
 				alert(result.message);
 			}
 		},
