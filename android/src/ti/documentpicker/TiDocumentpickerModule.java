@@ -4,39 +4,38 @@
  * Copyright (c) 2009-2018 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
- *
  */
-package ti.filepicker;
-
-import java.util.ArrayList;
-
-import org.appcelerator.kroll.KrollDict;
-import org.appcelerator.kroll.KrollFunction;
-import org.appcelerator.kroll.KrollModule;
-import org.appcelerator.kroll.annotations.Kroll;
-import org.appcelerator.titanium.TiApplication;
-import org.appcelerator.titanium.TiC;
-import org.appcelerator.titanium.util.TiActivityResultHandler;
-import org.appcelerator.titanium.util.TiActivitySupport;
-import org.appcelerator.kroll.common.Log;
-import org.appcelerator.titanium.util.TiConvert;
-import org.appcelerator.titanium.util.TiIntentWrapper;
+package ti.documentpicker;
 
 import android.app.Activity;
 import android.content.ClipData;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.net.Uri;
+import android.text.TextUtils;
 
-@Kroll.module(name="TiFilepicker", id="ti.filepicker")
-public class TiFilepickerModule extends KrollModule {
+import org.appcelerator.kroll.KrollDict;
+import org.appcelerator.kroll.KrollFunction;
+import org.appcelerator.kroll.KrollModule;
+import org.appcelerator.kroll.annotations.Kroll;
+import org.appcelerator.kroll.common.Log;
+import org.appcelerator.titanium.TiApplication;
+import org.appcelerator.titanium.TiC;
+import org.appcelerator.titanium.util.TiActivityResultHandler;
+import org.appcelerator.titanium.util.TiActivitySupport;
+import org.appcelerator.titanium.util.TiConvert;
+import org.appcelerator.titanium.util.TiIntentWrapper;
 
-    public static final String TAG = "TiFilepickerModule";
+import java.util.ArrayList;
+
+@Kroll.module(name = "TiDocumentpicker", id = "ti.documentpicker")
+public class TiDocumentpickerModule extends KrollModule {
+
+    public static final String TAG = "TiDocumentpickerModule";
 
     private static ContentResolver contentResolver;
 
-    public TiFilepickerModule()
-    {
+    public TiDocumentpickerModule() {
         super();
 
         if (contentResolver == null) {
@@ -45,43 +44,48 @@ public class TiFilepickerModule extends KrollModule {
     }
 
     @Kroll.method
-    public void pick(KrollDict options)
-    {
+    public void showDocumentPicker(KrollDict options) {
         KrollFunction callback = null;
 
-        if (options.containsKey("callback")) {
-            callback = (KrollFunction) options.get("callback");
+        if (options.containsKey("onSelect")) {
+            callback = (KrollFunction) options.get("onSelect");
         }
+
 
         final KrollFunction fCallback = callback;
 
         Activity activity = TiApplication.getInstance().getCurrentActivity();
         TiActivitySupport activitySupport = (TiActivitySupport) activity;
 
-        TiIntentWrapper galleryIntent = new TiIntentWrapper(new Intent());
-        galleryIntent.getIntent().setAction(Intent.ACTION_GET_CONTENT);
+        TiIntentWrapper filepickerWrapper = new TiIntentWrapper(new Intent());
+        Intent filepickerIntent = filepickerWrapper.getIntent();
+        filepickerIntent.setAction(Intent.ACTION_GET_CONTENT);
 
-        // Set media type to PDF
-        galleryIntent.getIntent().setType("application/pdf");
+        filepickerIntent.setType("*/*");
 
-        galleryIntent.getIntent().addCategory(Intent.CATEGORY_DEFAULT);
-        galleryIntent.setWindowId(TiIntentWrapper.createActivityName("GALLERY"));
+        if (options.containsKey("types")) {
+            String[] types = TiConvert.toStringArray((Object[])options.get("types"));
+            filepickerIntent.putExtra(Intent.EXTRA_MIME_TYPES, types);
+            Log.i("---", TextUtils.join(",",types));
+        }
 
-        final int PICK_IMAGE_SINGLE = activitySupport.getUniqueResultCode();
-        final int PICK_IMAGE_MULTIPLE = activitySupport.getUniqueResultCode();
+        filepickerIntent.addCategory(Intent.CATEGORY_DEFAULT);
+        filepickerWrapper.setWindowId(TiIntentWrapper.createActivityName("FilePicker"));
+
+        final int PICK_SINGLE = activitySupport.getUniqueResultCode();
+        final int PICK_MULTIPLE = activitySupport.getUniqueResultCode();
         boolean allowMultiple = false;
 
         if (options.containsKey(TiC.PROPERTY_ALLOW_MULTIPLE)) {
             allowMultiple = TiConvert.toBoolean(options.get(TiC.PROPERTY_ALLOW_MULTIPLE));
-            galleryIntent.getIntent().putExtra(Intent.EXTRA_ALLOW_MULTIPLE, allowMultiple);
+            filepickerIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, allowMultiple);
         }
 
-        final int code = allowMultiple ? PICK_IMAGE_MULTIPLE : PICK_IMAGE_SINGLE;
+        final int code = allowMultiple ? PICK_MULTIPLE : PICK_SINGLE;
 
-        activitySupport.launchActivityForResult(galleryIntent.getIntent(), code, new TiActivityResultHandler() {
+        activitySupport.launchActivityForResult(filepickerIntent, code, new TiActivityResultHandler() {
             @Override
-            public void onResult(Activity activity, int requestCode, int resultCode, Intent data)
-            {
+            public void onResult(Activity activity, int requestCode, int resultCode, Intent data) {
                 if (requestCode != code) {
                     return;
                 }
@@ -91,7 +95,7 @@ public class TiFilepickerModule extends KrollModule {
                         KrollDict response = new KrollDict();
                         response.put("success", true);
                         response.put("cancel", true);
-                        response.put("files", new ArrayList<String>().toArray(new String[0]));
+                        response.put("documents", new ArrayList<String>().toArray(new String[0]));
 
                         fCallback.callAsync(getKrollObject(), response);
                     }
@@ -103,7 +107,7 @@ public class TiFilepickerModule extends KrollModule {
                 String path = (uri != null) ? uri.toString() : null;
 
                 // Handle multiple file selection, if enabled.
-                if (requestCode == PICK_IMAGE_MULTIPLE) {
+                if (requestCode == PICK_MULTIPLE) {
                     // Wrap all selected file(s) in Titanium "CameraMediaItemType" dictionaries.
                     ArrayList<String> selectedFiles = new ArrayList<>();
                     ClipData clipData = data.getClipData();
@@ -134,7 +138,7 @@ public class TiFilepickerModule extends KrollModule {
                                 KrollDict response = new KrollDict();
                                 response.put("success", true);
                                 response.put("cancel", true);
-                                response.put("files", new ArrayList<String>().toArray(new String[0]));
+                                response.put("documents", new ArrayList<String>().toArray(new String[0]));
 
                                 fCallback.callAsync(getKrollObject(), response);
                             }
@@ -154,7 +158,7 @@ public class TiFilepickerModule extends KrollModule {
                         if (fCallback != null) {
                             KrollDict response = new KrollDict();
                             response.put("success", true);
-                            response.put("files", selectedDocuments.toArray(new String[0]));
+                            response.put("documents", selectedDocuments.toArray(new String[0]));
                             fCallback.callAsync(getKrollObject(), response);
                         }
                     }
@@ -178,12 +182,12 @@ public class TiFilepickerModule extends KrollModule {
 
                         KrollDict response = new KrollDict();
                         response.put("success", true);
-                        response.put("files", selectedDocuments.toArray(new String[0]));
+                        response.put("documents", selectedDocuments.toArray(new String[0]));
 
                         fCallback.callAsync(getKrollObject(), response);
                     }
                 } catch (OutOfMemoryError e) {
-                    String msg = "Not enough memory to get image: " + e.getMessage();
+                    String msg = "Not enough memory to get files: " + e.getMessage();
                     Log.e(TAG, msg);
                     if (fCallback != null) {
                         fCallback.callAsync(getKrollObject(), createErrorResponse(1, msg));
@@ -192,12 +196,11 @@ public class TiFilepickerModule extends KrollModule {
             }
 
             @Override
-            public void onError(Activity activity, int requestCode, Exception e)
-            {
+            public void onError(Activity activity, int requestCode, Exception e) {
                 if (requestCode != code) {
                     return;
                 }
-                String msg = "Gallery problem: " + e.getMessage();
+                String msg = "Filepicker problem: " + e.getMessage();
                 Log.e(TAG, msg, e);
                 if (fCallback != null) {
                     fCallback.callAsync(getKrollObject(), createErrorResponse(1, msg));

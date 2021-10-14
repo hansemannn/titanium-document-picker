@@ -4,22 +4,40 @@ The the native document pickers (iOS / Android) to select files from the local d
 
 ## Todo's
 
-- [ ] Currently, the Android module import is `ti.filepicker`, on iOS it's `ti.documentpicker`
 - [ ] Both modules may not have full parity on the file selection
-- [ ] Add cross-platform example (currently the example/app.js is Android-only) 
 
 ## Example
 
 ```js
-  import TiDocumentPicker from 'ti.documentpicker';
+import TiDocumentPicker from 'ti.documentpicker';
 
-  TiDocumentPicker.showDocumentPicker({
-    types: [ 'com.adobe.pdf', 'public.jpeg', 'public.png' ],
-    allowsMultipleSelection: false,
-    onSelect: event => {
-      console.warn(event.documents);
-    }
-  });
+var win = Ti.UI.createWindow({
+	backgroundColor: '#fff'
+});
+var btn = Ti.UI.createButton({
+	title: "pick"
+});
+
+btn.addEventListener("click", function(e) {
+
+	var mimeTypes = (OS_ANDROID) ? ["application/pdf", "audio/mpeg"] : ['com.adobe.pdf', 'public.jpeg', 'public.png']
+
+	TiDocumentPicker.showDocumentPicker({
+		types: mimeTypes,
+		allowMultiple: false,
+		allowsMultipleSelection: false,
+		onSelect: function(result) {
+			if (result.success) {
+				Ti.API.info('Files - ' + JSON.stringify(result.documents));
+			} else {
+				alert(result.message);
+			}
+		},
+	});
+})
+
+win.add(btn);
+win.open();
 ```
 
 ## License
