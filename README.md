@@ -24,8 +24,7 @@ btn.addEventListener("click", function(e) {
 
 	TiDocumentPicker.showDocumentPicker({
 		types: mimeTypes,
-		allowMultiple: false,
-		allowsMultipleSelection: false,
+		allowMultiple: true,
 		onSelect: function(result) {
 			Ti.API.info('Files - ' + JSON.stringify(result.documents));
 			if (OS_ANDROID && result.success === false) {
@@ -38,6 +37,16 @@ btn.addEventListener("click", function(e) {
 win.add(btn);
 win.open();
 ```
+
+## Methods
+* showDocumentPicker():
+ * parameter:
+ <b>types</b>: String array e.g. ` ["application/pdf"]` and `'com.adobe.pdf']`
+ <b>allowMultiple</b>: boolean to allow multi file selection
+ <b>onSelect</b>: callback function. Returns `result.documents`
+ <b>directoryURL</b> (iOS only): String with folder name
+ <b>shouldShowFileExtensions</b> (iOS only): boolean to show extensions or not
+
 
 ## License
 
