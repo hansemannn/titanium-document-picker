@@ -30,11 +30,11 @@ class TiDocumentpickerModule: TiModule {
     onSelectCallback = params["onSelect"] as? KrollCallback
 
     let types = mappedTypes(from: params["types"] as? [String])
-    let allowsMultipleSelection = params["allowsMultipleSelection"] as? Bool ?? false
+    let allowsMultipleSelection = params["allowMultiple"] as? Bool ?? false
     let shouldShowFileExtensions = params["shouldShowFileExtensions"] as? Bool ?? false
     let directoryURL = TiUtils.stringValue(params["directoryURL"])
     let picker = UIDocumentPickerViewController(documentTypes: types, in: .import)
-    
+
     picker.delegate = self
     picker.allowsMultipleSelection = allowsMultipleSelection
 
@@ -52,7 +52,7 @@ class TiDocumentpickerModule: TiModule {
 
     topPresentedController.present(picker, animated: true, completion: nil)
   }
-  
+
   private func mappedTypes(from proxyValues: [String]?) -> [String] {
     // Default: Only PDF, PNG and JPEG for backwards compatibility
     guard let proxyValues = proxyValues else {

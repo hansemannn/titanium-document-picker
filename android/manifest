@@ -11,8 +11,8 @@ license: Specify your license
 copyright: @ Prashant Saini
 
 # these should not be edited
-name: ti-filepicker
-moduleid: ti.filepicker
+name: ti-documentpicker
+moduleid: ti.documentpicker
 guid: 50d983b2-da78-4a88-9466-346ce98518cc
 platform: android
 minsdk: 9.0.0
