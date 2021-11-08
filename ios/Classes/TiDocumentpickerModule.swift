@@ -9,6 +9,7 @@
 import MobileCoreServices
 import TitaniumKit
 import UIKit
+import UniformTypeIdentifiers
 
 @objc(TiDocumentpickerModule)
 class TiDocumentpickerModule: TiModule {
@@ -33,7 +34,14 @@ class TiDocumentpickerModule: TiModule {
     let allowsMultipleSelection = params["allowMultiple"] as? Bool ?? false
     let shouldShowFileExtensions = params["shouldShowFileExtensions"] as? Bool ?? false
     let directoryURL = TiUtils.stringValue(params["directoryURL"])
-    let picker = UIDocumentPickerViewController(documentTypes: types, in: .import)
+    var picker: UIDocumentPickerViewController!
+
+    // Use new API on iOS 14+
+    if #available(iOS 14.0, *) {
+      picker = UIDocumentPickerViewController(forOpeningContentTypes: types.map({ UTType($0)! }), asCopy: true)
+    } else {
+      picker = UIDocumentPickerViewController(documentTypes: types, in: .import)
+    }
 
     picker.delegate = self
     picker.allowsMultipleSelection = allowsMultipleSelection
