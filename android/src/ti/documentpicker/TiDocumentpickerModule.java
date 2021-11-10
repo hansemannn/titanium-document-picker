@@ -12,7 +12,6 @@ import android.content.ClipData;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.net.Uri;
-import android.text.TextUtils;
 
 import org.appcelerator.kroll.KrollDict;
 import org.appcelerator.kroll.KrollFunction;
@@ -27,6 +26,7 @@ import org.appcelerator.titanium.util.TiConvert;
 import org.appcelerator.titanium.util.TiIntentWrapper;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 @Kroll.module(name = "TiDocumentpicker", id = "ti.documentpicker")
 public class TiDocumentpickerModule extends KrollModule {
@@ -59,14 +59,22 @@ public class TiDocumentpickerModule extends KrollModule {
 
         TiIntentWrapper filepickerWrapper = new TiIntentWrapper(new Intent());
         Intent filepickerIntent = filepickerWrapper.getIntent();
-        filepickerIntent.setAction(Intent.ACTION_GET_CONTENT);
+        boolean filesOnly = false;
 
         filepickerIntent.setType("*/*");
 
         if (options.containsKey("types")) {
             String[] types = TiConvert.toStringArray((Object[])options.get("types"));
             filepickerIntent.putExtra(Intent.EXTRA_MIME_TYPES, types);
-            Log.i("---", TextUtils.join(",",types));
+            if (!Arrays.asList(types).contains("image") && !Arrays.asList(types).contains("video")) {
+                filesOnly = true;
+            }
+        }
+
+        if (filesOnly) {
+          filepickerIntent.setAction(Intent.ACTION_OPEN_DOCUMENT);
+        } else {
+          filepickerIntent.setAction(Intent.ACTION_GET_CONTENT);
         }
 
         filepickerIntent.addCategory(Intent.CATEGORY_DEFAULT);
