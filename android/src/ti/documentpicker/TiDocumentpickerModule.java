@@ -11,7 +11,9 @@ import android.app.Activity;
 import android.content.ClipData;
 import android.content.ContentResolver;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
+import android.provider.OpenableColumns;
 import android.text.TextUtils;
 
 import org.appcelerator.kroll.KrollDict;
@@ -95,7 +97,7 @@ public class TiDocumentpickerModule extends KrollModule {
                         KrollDict response = new KrollDict();
                         response.put("success", true);
                         response.put("cancel", true);
-                        response.put("documents", new ArrayList<String>().toArray(new String[0]));
+                        response.put("documents", new ArrayList<String>().toArray(new KrollDict[0]));
 
                         fCallback.callAsync(getKrollObject(), response);
                     }
@@ -109,7 +111,7 @@ public class TiDocumentpickerModule extends KrollModule {
                 // Handle multiple file selection, if enabled.
                 if (requestCode == PICK_MULTIPLE) {
                     // Wrap all selected file(s) in Titanium "CameraMediaItemType" dictionaries.
-                    ArrayList<String> selectedFiles = new ArrayList<>();
+                    ArrayList<KrollDict> selectedFiles = new ArrayList<>();
                     ClipData clipData = data.getClipData();
                     if (clipData != null) {
                         // Fetch file(s) from clip data.
@@ -119,16 +121,24 @@ public class TiDocumentpickerModule extends KrollModule {
                             if ((item == null) || (item.getUri() == null)) {
                                 continue;
                             }
-                            selectedFiles.add(item.getUri().toString());
+                            KrollDict file = new KrollDict();
+                            file.put("name", getFileName(item.getUri()));
+                            file.put("nativePath", item.getUri().toString());
+
+                            selectedFiles.add(file);
                         }
                     } else if (path != null) {
+                        KrollDict file = new KrollDict();
+                        file.put("name", getFileName(uri));
+                        file.put("nativePath", path);
+
                         // Only a single file was found.
-                        selectedFiles.add(path);
+                        selectedFiles.add(file);
                     }
 
                     // Copy each selected file to either an "images" or "videos" collection.
 
-                    ArrayList<String> selectedDocuments = new ArrayList<>(selectedFiles);
+                    ArrayList<KrollDict> selectedDocuments = new ArrayList<>(selectedFiles);
 
                     // Invoke a callback with the selection result.
                     if (selectedDocuments.isEmpty()) {
@@ -138,7 +148,7 @@ public class TiDocumentpickerModule extends KrollModule {
                                 KrollDict response = new KrollDict();
                                 response.put("success", true);
                                 response.put("cancel", true);
-                                response.put("documents", new ArrayList<String>().toArray(new String[0]));
+                                response.put("documents", new ArrayList<String>().toArray(new KrollDict[0]));
 
                                 fCallback.callAsync(getKrollObject(), response);
                             }
@@ -158,7 +168,7 @@ public class TiDocumentpickerModule extends KrollModule {
                         if (fCallback != null) {
                             KrollDict response = new KrollDict();
                             response.put("success", true);
-                            response.put("documents", selectedDocuments.toArray(new String[0]));
+                            response.put("documents", selectedDocuments.toArray(new KrollDict[0]));
                             fCallback.callAsync(getKrollObject(), response);
                         }
                     }
@@ -182,7 +192,7 @@ public class TiDocumentpickerModule extends KrollModule {
 
                         KrollDict response = new KrollDict();
                         response.put("success", true);
-                        response.put("documents", selectedDocuments.toArray(new String[0]));
+                        response.put("documents", selectedDocuments.toArray(new KrollDict[0]));
 
                         fCallback.callAsync(getKrollObject(), response);
                     }
@@ -207,5 +217,31 @@ public class TiDocumentpickerModule extends KrollModule {
                 }
             }
         });
+    }
+
+    // CREDITS: https://stackoverflow.com/a/25005243/5537752
+    public String getFileName(Uri uri) {
+        String result = null;
+        if (uri.getScheme().equals("content")) {
+            Cursor cursor = contentResolver.query(uri, null, null, null, null);
+            try {
+                if (cursor != null && cursor.moveToFirst()) {
+                    int columnIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+                    if (columnIndex >= 0) {
+                        result = cursor.getString(columnIndex);
+                    }
+                }
+            } finally {
+                cursor.close();
+            }
+        }
+        if (result == null) {
+            result = uri.getPath();
+            int cut = result.lastIndexOf('/');
+            if (cut != -1) {
+                result = result.substring(cut + 1);
+            }
+        }
+        return result;
     }
 }
