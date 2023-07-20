@@ -187,8 +187,11 @@ public class TiDocumentpickerModule extends KrollModule {
                         return;
                     }
                     if (fCallback != null) {
-                        ArrayList<String> selectedDocuments = new ArrayList<>();
-                        selectedDocuments.add(path);
+                        ArrayList<KrollDict> selectedDocuments = new ArrayList<>();
+                        KrollDict file = new KrollDict();
+                        file.put("name", getFileName(uri));
+                        file.put("nativePath", path);
+                        selectedDocuments.add(file);
 
                         KrollDict response = new KrollDict();
                         response.put("success", true);
