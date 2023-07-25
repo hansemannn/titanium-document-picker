@@ -97,7 +97,7 @@ public class TiDocumentpickerModule extends KrollModule {
                         KrollDict response = new KrollDict();
                         response.put("success", true);
                         response.put("cancel", true);
-                        response.put("documents", new ArrayList<String>().toArray(new KrollDict[0]));
+                        response.put("documents", new ArrayList<KrollDict>().toArray(new KrollDict[0]));
 
                         fCallback.callAsync(getKrollObject(), response);
                     }
@@ -148,7 +148,7 @@ public class TiDocumentpickerModule extends KrollModule {
                                 KrollDict response = new KrollDict();
                                 response.put("success", true);
                                 response.put("cancel", true);
-                                response.put("documents", new ArrayList<String>().toArray(new KrollDict[0]));
+                                response.put("documents", new ArrayList<KrollDict>().toArray(new KrollDict[0]));
 
                                 fCallback.callAsync(getKrollObject(), response);
                             }
