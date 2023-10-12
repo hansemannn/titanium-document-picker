@@ -2,7 +2,7 @@
 # this is your module manifest and used by Titanium
 # during compilation, packaging, distribution, etc.
 #
-version: 2.1.1
+version: 2.2.0
 apiversion: 2
 architectures: arm64 x86_64
 description: titanium-document-picker is a Swift based Titanium module.
@@ -16,4 +16,4 @@ name: titanium-document-picker
 moduleid: ti.documentpicker
 guid: 3f4e12c8-b5ff-46a1-a20f-1be2d8b8c5c8
 platform: iphone
-minsdk: 9.2.0
+minsdk: 10.0.0
