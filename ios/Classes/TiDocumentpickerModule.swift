@@ -69,6 +69,55 @@ class TiDocumentpickerModule: TiModule {
 
     return proxyValues
   }
+
+  @objc(export:)
+  func export(arguments: [[String: Any]]?) {
+
+    guard let arguments = arguments, let params = arguments.first else { return }
+
+    onSelectCallback = params["onSelect"] as? KrollCallback
+
+    let urls = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
+    let docsDirectory = urls[0]
+
+    guard let file = TiUtils.stringValue(params["file"]) else { return }
+
+    let url = docsDirectory.appendingPathComponent(file)
+
+    let filePath = url.path
+
+    if !FileManager.default.fileExists(atPath: filePath) {
+      print("[WARN] export could not find file at path: \(filePath)")
+      return
+    }
+
+    var picker: UIDocumentPickerViewController!
+
+    // Use new API on iOS 14+
+    if #available(iOS 14.0, *) {
+      picker = UIDocumentPickerViewController(forExporting: [url], asCopy: true)
+    } else {
+      picker = UIDocumentPickerViewController(urls: [url], in: .exportToService)
+    }
+
+    picker.delegate = self
+
+    let directoryURL = TiUtils.stringValue(params["directoryURL"])
+
+    if #available(iOS 13.0, *) {
+      if let directoryURL = directoryURL {
+        picker.directoryURL = URL(string: directoryURL)
+      }
+    }
+
+    guard let controller = TiApp.controller(), let topPresentedController = controller.topPresentedController() else {
+      print("[WARN] No window opened. Ignoring gallery call …")
+      return
+    }
+
+    topPresentedController.present(picker, animated: true, completion: nil)
+
+  }
 }
 
 // MARK: UIDocumentPickerDelegate
