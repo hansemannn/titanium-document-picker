@@ -14,7 +14,6 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.OpenableColumns;
-import android.text.TextUtils;
 
 import org.appcelerator.kroll.KrollDict;
 import org.appcelerator.kroll.KrollFunction;
@@ -38,12 +37,39 @@ public class TiDocumentpickerModule extends KrollModule {
 
     private static ContentResolver contentResolver;
 
+    // Currently supported file types
+    @Kroll.constant public static final String FILE_TYPE_JPEG = "jpeg";
+    @Kroll.constant public static final String FILE_TYPE_PNG = "png";
+    @Kroll.constant public static final String FILE_TYPE_PDF = "pdf";
+
     public TiDocumentpickerModule() {
         super();
 
         if (contentResolver == null) {
             contentResolver = TiApplication.getInstance().getContentResolver();
         }
+    }
+
+    private String[] prepareMimeTypes(String[] requestedTypes) {
+        String[] mimeTypes = new String[requestedTypes.length];
+
+        for (int i = 0; i < requestedTypes.length; i++) {
+            switch (requestedTypes[i]) {
+                case FILE_TYPE_JPEG:
+                    mimeTypes[i] = "image/jpeg";
+                    break;
+                case FILE_TYPE_PNG:
+                    mimeTypes[i] = "image/png";
+                    break;
+                case FILE_TYPE_PDF:
+                    mimeTypes[i] = "application/pdf";
+                    break;
+                default:
+                    mimeTypes[i] = requestedTypes[i];
+            }
+        }
+
+        return mimeTypes;
     }
 
     @Kroll.method
@@ -67,7 +93,7 @@ public class TiDocumentpickerModule extends KrollModule {
         filepickerIntent.setType("*/*");
 
         if (options.containsKey("types")) {
-            String[] types = TiConvert.toStringArray((Object[])options.get("types"));
+            String[] types = prepareMimeTypes(options.getStringArray("types"));
             filepickerIntent.putExtra(Intent.EXTRA_MIME_TYPES, types);
             if (!Arrays.asList(types).contains("image") && !Arrays.asList(types).contains("video")) {
                 filesOnly = true;

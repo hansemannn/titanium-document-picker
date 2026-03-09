@@ -13,6 +13,9 @@ import UniformTypeIdentifiers
 
 @objc(TiDocumentpickerModule)
 class TiDocumentpickerModule: TiModule {
+  @objc let FILE_TYPE_JPEG = "jpeg"
+  @objc let FILE_TYPE_PNG = "png"
+  @objc let FILE_TYPE_PDF = "pdf"
 
   func moduleGUID() -> String {
     return "3f4e12c8-b5ff-46a1-a20f-1be2d8b8c5c8"
@@ -30,7 +33,8 @@ class TiDocumentpickerModule: TiModule {
 
     onSelectCallback = params["onSelect"] as? KrollCallback
 
-    let types = mappedTypes(from: params["types"] as? [String])
+    let requestedTypes = params["types"] as? [String]
+    let types = mappedTypes(from: requestedTypes)
     let allowsMultipleSelection = params["allowMultiple"] as? Bool ?? false
     let shouldShowFileExtensions = params["shouldShowFileExtensions"] as? Bool ?? false
     let directoryURL = TiUtils.stringValue(params["directoryURL"])
@@ -38,7 +42,11 @@ class TiDocumentpickerModule: TiModule {
 
     // Use new API on iOS 14+
     if #available(iOS 14.0, *) {
-      picker = UIDocumentPickerViewController(forOpeningContentTypes: types.map({ UTType($0)! }), asCopy: true)
+      let contentTypes = types.compactMap { UTType($0) }
+      picker = UIDocumentPickerViewController(
+        forOpeningContentTypes: contentTypes.isEmpty ? [UTType.data] : contentTypes,
+        asCopy: true
+      )
     } else {
       picker = UIDocumentPickerViewController(documentTypes: types, in: .import)
     }
@@ -67,7 +75,18 @@ class TiDocumentpickerModule: TiModule {
       return [String(kUTTypePDF), String(kUTTypePNG), String(kUTTypeJPEG)]
     }
 
-    return proxyValues
+    return proxyValues.map { requestedType in
+      switch requestedType.lowercased() {
+      case FILE_TYPE_JPEG:
+        return String(kUTTypeJPEG)
+      case FILE_TYPE_PNG:
+        return String(kUTTypePNG)
+      case FILE_TYPE_PDF:
+        return String(kUTTypePDF)
+      default:
+        return requestedType
+      }
+    }
   }
 
   @objc(export:)
